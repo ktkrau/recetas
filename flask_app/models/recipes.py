@@ -56,7 +56,7 @@ class Recipe:
     @classmethod
     def get_all(cls):
         query = "select recipes.*, first_name from recipes LEFT JOIN users ON users.id = recipes.user_id"
-        results = connectToMySQL('recetas').query_db(query) #Lista de Diccionarios
+        results = connectToMySQL('recetas').query_db(query) #Lista de muchos Diccionarios
         recipes = []
 
         for recipe in results:
@@ -64,6 +64,43 @@ class Recipe:
             recipes.append(cls(recipe))#1.- en cls(recipe) creamos la instancia en base al diccionario 2.- gracias al recipe.append agrego eso instancia a la lista vacia recipes
 
         return recipes
+
+
+    @classmethod
+    def get_by_id(cls, formulario):
+        #formulario : diccionario con el identificador de mi usuario = {id: 1}
+        query = "select recipes.*, first_name from recipes LEFT JOIN users ON users.id = recipes.user_id WHERE recipes.id = %(id)s"
+        result = connectToMySQL('recetas').query_db(query, formulario) #recibimos una lista con un diccionario
+        #quiero regresar un objeto de receta:
+        recipe = cls(result[0]) #la posicion 0 es la que quiero transformar en objeto de receta, cls()(se crea la instancia en base a ese diccionario)
+        return recipe
+
+    @classmethod
+    def update(cls, formulario):
+        #formulario = {name: Albondigas, description: "bolitas de carne, instructions...., recipe_id : 1"}
+        query = "UPDATE recipes SET name = %(name)s, description=%(description)s, instructions = %(instructions)s, date_made = %(date_made)s, under_30 = %(under_30)s WHERE id = %(recipe_id)s"
+        result = connectToMySQL('recetas').query_db(query, formulario) 
+        return result
+
+    @classmethod
+    def delete(cls, formulario):
+        #formulario = diccionario {id: 1}
+        query = "DELETE FROM recipes WHERE id = %(id)s"
+        result = connectToMySQL('recetas').query_db(query, formulario)
+        return result
+
+
+
+    
+
+
+
+
+
+
+        
+
+        
 
 
 
