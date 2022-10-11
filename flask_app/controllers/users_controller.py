@@ -1,4 +1,5 @@
-from flask import render_template, redirect, request, session, flash
+from email import message
+from flask import render_template, redirect, request, session, flash, jsonify
 from flask_app import app
 
 from flask_app.models.users import User
@@ -38,17 +39,20 @@ def login():
     #verificamos que el email exista en la base de datos
     user = User.get_by_email(request.form) #1.Recibimos falso 2. recibimos una instancia de usuario
     if not user: #si user es = a falso
-        flash('E-mail no encontrado', 'login')
-        return redirect('/')
+        return jsonify(message="E-mail no encontrado")
+        #flash('E-mail no encontrado', 'login')
+        #return redirect('/')
 
     #user es una instancia con todos los datos de mi usuario
     #como verificamos que el password está correcto o no: check_password_hash // funcion de bcrypt
     if not bcrypt.check_password_hash(user.password, request.form['password']):
-        flash('Password incorrecto', 'login')
-        return redirect('/')
+        #flash('Password incorrecto', 'login')
+        #return redirect('/')
+        return jsonify(message="Password incorrecto")
 
     session['user_id'] = user.id
-    return redirect('/dashboard')
+    #return redirect('/dashboard')
+    return jsonify(message="correcto")
 
 
 @app.route('/dashboard')
